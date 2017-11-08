@@ -21,9 +21,10 @@ class TestSimilarity(unittest.TestCase):
         print true_jaccards
         print result_list
         for i in range(len(result_list)-1):
-            lower=true_jaccards[i]*0.2
-            upper=true_jaccards[i]*5
-            if(result_list[i]<lower or result_list[i]>upper):
+            lower=true_jaccards[i]*0.5
+            upper=true_jaccards[i]*2
+            if not result_list[i] == 0 and result_list[i]<lower or result_list[i]>upper:
+                print i
                 self.assertFalse(1, "At least one result outside of accepted interval")
             else:
                 self.assertTrue(1)
