@@ -44,7 +44,6 @@ class DocumentBase:
         sign_matrix=min_hasher.find_signature_matrix(bool_matrix, self.number_of_permutations)
         hasher=hashing.Hasher(sign_matrix, int(math.sqrt(self.number_of_permutations))/2)
         hasher.hash_matrix()
-        print len(hasher.buckets)
         candidates=self.find_candidates(hasher.buckets, hasher)
         filtered_candidates=self.compare_candidates(candidates)
         return self.get_resulting_files(filtered_candidates, candidates)

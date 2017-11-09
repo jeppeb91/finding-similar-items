@@ -21,6 +21,7 @@ class MinHashing:
         result_list = map(lambda x: float(float(x)/float(self.number_of_permutations)), result_list)
         return result_list
     def find_signature_matrix(self, boolean_matrix, number_of_permutations):
+
         number_of_sets=len(boolean_matrix)
         signature_matrix=[[0]*number_of_sets for i in range(number_of_permutations)]
         for i in range(number_of_permutations):
