@@ -6,7 +6,7 @@ class Hasher:
     band_length=0
     highest_column_index=0
     highest_row_index=0
-    prime=3117
+    prime=3719
     lock=None
     buckets_of_my_document=set()
     def __init__(self, matrix, band_length):
@@ -44,7 +44,8 @@ class Hasher:
     def hash_band(self, band):
         sum=0
         for i in range (len(band)):
-            sum+=band[i]*i
+            sum+=band[i]
+            sum=sum<<i
         return sum%self.prime
     def split_row_to_bands(self, row_index):
         bands=[]

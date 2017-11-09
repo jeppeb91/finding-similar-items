@@ -11,8 +11,8 @@ class TestSimilarity(unittest.TestCase):
     file_path2=os.path.join(parent_dir, "source\\min_hashing.py")
     #shing=shingling.Shingling()
     #min_hasher=min_hashing.MinHashing()
-    SHINGLE_SIZE=7
-    NUMBER_OF_PERMUTATIONS=1000
+    SHINGLE_SIZE=5
+    NUMBER_OF_PERMUTATIONS=100
     def test_compare(self):
         my_path_to_dir=os.path.join(parent_dir, "source", "resources")
         my_docs=document_base.DocumentBase(my_path_to_dir, self.SHINGLE_SIZE, self.NUMBER_OF_PERMUTATIONS, 0)
