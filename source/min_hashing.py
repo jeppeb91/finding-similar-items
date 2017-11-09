@@ -62,16 +62,3 @@ class MinHashing:
                 if rows[j] in sets[i]:
                     matrix[i][j]=1
         return matrix
-    def shuffle(self, my_list):
-        if not isinstance(my_list, list):
-            return "Incorrect list"
-        import random
-        for i in range (len(my_list)):
-            my_random=random.randint(i, len(my_list)-1)
-            self.swap(my_list, i, my_random)
-        return my_list
-    def swap(self, my_list, first_index, second_index):
-        temp = my_list[first_index]
-        my_list[first_index]=my_list[second_index]
-        my_list[second_index]=temp
-        return my_list

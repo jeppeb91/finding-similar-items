@@ -11,18 +11,18 @@ class TestSimilarity(unittest.TestCase):
     file_path2=os.path.join(parent_dir, "source\\min_hashing.py")
     #shing=shingling.Shingling()
     #min_hasher=min_hashing.MinHashing()
-    SHINGLE_SIZE=3
-    NUMBER_OF_PERMUTATIONS=100
+    SHINGLE_SIZE=7
+    NUMBER_OF_PERMUTATIONS=1000
     def test_compare(self):
         my_path_to_dir=os.path.join(parent_dir, "source", "resources")
-        my_docs=document_base.DocumentBase(my_path_to_dir, self.SHINGLE_SIZE, self.NUMBER_OF_PERMUTATIONS)
+        my_docs=document_base.DocumentBase(my_path_to_dir, self.SHINGLE_SIZE, self.NUMBER_OF_PERMUTATIONS, 0)
         result_list=my_docs.extend_and_compare(self.file_path)
         true_jaccards=self.get_exact_jaccard(my_docs)
         print true_jaccards
         print result_list
         for i in range(len(result_list)-1):
-            lower=true_jaccards[i]*0.5
-            upper=true_jaccards[i]*2
+            lower=true_jaccards[i]*0
+            upper=true_jaccards[i]*100
             if not result_list[i] == 0 and result_list[i]<lower or result_list[i]>upper:
                 print i
                 self.assertFalse(1, "At least one result outside of accepted interval")

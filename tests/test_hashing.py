@@ -9,14 +9,12 @@ from source import shingling, min_hashing, document_base, hashing
 class TestSimilarity(unittest.TestCase):
     file_path=os.path.join(parent_dir, "source\\resources\\dataset-CalheirosMoroRita-2017.csv")
     file_path2=os.path.join(parent_dir, "source\\min_hashing.py")
-    #shing=shingling.Shingling()
-    #min_hasher=min_hashing.MinHashing()
-    SHINGLE_SIZE=2
+    SHINGLE_SIZE=3
     NUMBER_OF_PERMUTATIONS=100
 
     def test_compare(self):
         my_path_to_dir=os.path.join(parent_dir, "source", "resources")
-        my_docs=document_base.DocumentBase(my_path_to_dir, self.SHINGLE_SIZE, self.NUMBER_OF_PERMUTATIONS)
+        my_docs=document_base.DocumentBase(my_path_to_dir, self.SHINGLE_SIZE, self.NUMBER_OF_PERMUTATIONS, 0)
         result_set=my_docs.lsh(self.file_path)
         count=0
         print result_set

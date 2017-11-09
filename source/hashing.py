@@ -6,8 +6,9 @@ class Hasher:
     band_length=0
     highest_column_index=0
     highest_row_index=0
-    prime=31
+    prime=3117
     lock=None
+    buckets_of_my_document=set()
     def __init__(self, matrix, band_length):
         self.matrix=matrix
         self.band_length=band_length
@@ -23,6 +24,8 @@ class Hasher:
         bands = self.split_row_to_bands(row_index)
         for i in range(len(bands)):
             hash_value = self.hash_band(bands[i])
+            if row_index == self.highest_row_index-1:
+                self.buckets_of_my_document.add(hash_value)
             self.update_buckets(hash_value, row_index, parent)
     def update_buckets(self, hash_value, row_index, parent):
         while True:
@@ -35,16 +38,14 @@ class Hasher:
                     current.add(row_index)
                     temp={hash_value:current}
                     self.buckets.update(temp)
-                else:
-                    print "locked"
             finally:
                 parent.lock.release()
                 break
     def hash_band(self, band):
         sum=0
         for i in range (len(band)):
-            sum+=band[i]
-        return sum
+            sum+=band[i]*i
+        return sum%self.prime
     def split_row_to_bands(self, row_index):
         bands=[]
         current_amount=0
@@ -58,5 +59,4 @@ class Hasher:
                 current_elements=[]
         if not current_elements == []:
             bands.append(current_elements)
-        print bands
         return bands
