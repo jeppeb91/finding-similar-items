@@ -55,6 +55,8 @@ class DocumentBase:
         my_signature_column=self.min_hasher.find_signature_row(my_boolean_column)
         self.hasher.inspect_single_row(my_signature_column)
         candidates=self.find_candidates(self.hasher.buckets, self.hasher)
+        if candidates is None:
+            return "No match"
         filtered_candidates=self.compare_candidates(candidates)
         return self.get_resulting_files(filtered_candidates, candidates)
     def get_resulting_files(self, filtered_candidates, candidates):
@@ -68,7 +70,9 @@ class DocumentBase:
         candidate_set=set()
         for bucket in hasher.buckets_of_my_document:
             current=hasher.buckets.get(bucket)
-            members= current.members
+            if current is None:
+                return None
+            members = current.members
             for member in members:
                 candidate_set.add(member)
         return list(candidate_set)
