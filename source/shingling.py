@@ -16,8 +16,14 @@ class Shingling:
             shingles.add(document[counter:counter+shingle_size])
             counter=counter+1
         self.update_parent(shingles, file_path)
-        #return shingles
-
+    def shingle_single(self, file_path, shingle_size):
+        document=self.read_file(file_path)
+        counter=0
+        shingles=set()
+        while counter+shingle_size<len(document):
+            shingles.add(document[counter:counter+shingle_size])
+            counter=counter+1
+        return shingles
     def update_parent(self, shingles, file_path):
         while True:
             try:
