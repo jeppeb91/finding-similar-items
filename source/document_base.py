@@ -11,13 +11,20 @@ class DocumentBase:
     shingle_size=0
     lock=None
     treshold=0.05
+    my_shingles=[]
+    shingling=None
+    min_hasher=None
+    hasher=None
     def __init__(self, path_to_directory, shing_size, number_of_perms, treshold):
         self.shingle_size=shing_size
         self.number_of_permutations=number_of_perms
         self.treshold=treshold
         self.lock=threading.Lock()
         self.load_directory(path_to_directory)
+        self.shingling=shingling.Shingling(self)
+        self.min_hasher=min_hashing.MinHashing(self.number_of_permutations)
         self.shingle_all_in_directory()
+        self.prepare_lsh()
     def load_directory(self, document_directory):
         for (dirpath, dirnames, filenames) in os.walk(document_directory):
             for i in range(len(filenames)):
@@ -29,6 +36,11 @@ class DocumentBase:
             # self.shingle_sets.append(shing.shingle_all(self.documents[i], self.shingle_size))
             thread=threading.Thread(target=shing.shingle_all(self.documents[i], self.shingle_size))
             thread.start()
+    def prepare_lsh(self):
+        bool_matrix=self.min_hasher.make_boolean_matrix(self.shingle_sets)
+        sign_matrix=self.min_hasher.find_signature_matrix(bool_matrix, self.number_of_permutations)
+        self.hasher=hashing.Hasher(sign_matrix, int(math.sqrt(self.number_of_permutations))/2)
+        self.hasher.hash_matrix()
     def extend_and_compare(self, path_to_document):
         shing=shingling.Shingling(self)
         min_hasher=min_hashing.MinHashing(self.number_of_permutations)
@@ -37,17 +49,12 @@ class DocumentBase:
     def add_shingles(self, shingles):
         self.shingle_sets.append(shingles)
     def lsh(self, path_to_document):
-        shing=shingling.Shingling(self)
-        min_hasher=min_hashing.MinHashing(self.number_of_permutations)
-        my_shingles=shing.shingle_single(path_to_document, self.shingle_size)
-        bool_matrix=min_hasher.make_boolean_matrix(self.shingle_sets)
-        sign_matrix=min_hasher.find_signature_matrix(bool_matrix, self.number_of_permutations)
-        hasher=hashing.Hasher(sign_matrix, int(math.sqrt(self.number_of_permutations))/2)
-        hasher.hash_matrix()
-        my_boolean_column=min_hasher.make_boolean_single(my_shingles)
-        my_signature_column=min_hasher.find_signature_row(my_boolean_column)
-        print len(my_signature_column)
-        candidates=self.find_candidates(hasher.buckets, hasher)
+        self.hasher.reset_buckets_of_my_document()
+        self.my_shingles=self.shingling.shingle_single(path_to_document, self.shingle_size)
+        my_boolean_column=self.min_hasher.make_boolean_single(self.my_shingles)
+        my_signature_column=self.min_hasher.find_signature_row(my_boolean_column)
+        self.hasher.inspect_single_row(my_signature_column)
+        candidates=self.find_candidates(self.hasher.buckets, self.hasher)
         filtered_candidates=self.compare_candidates(candidates)
         return self.get_resulting_files(filtered_candidates, candidates)
     def get_resulting_files(self, filtered_candidates, candidates):
@@ -66,12 +73,9 @@ class DocumentBase:
                 candidate_set.add(member)
         return list(candidate_set)
     def compare_candidates(self, candidates):
-        my_document_index=len(self.shingle_sets)-1
-        my_shingles=self.shingle_sets[my_document_index]
         result=[]
-        candidates.remove(my_document_index)
         for i in range(len(candidates)):
-            result.append(self.jaccard_similarity(my_shingles, self.shingle_sets[candidates[i]]))
+            result.append(self.jaccard_similarity(self.my_shingles, self.shingle_sets[candidates[i]]))
         for i in range(len(result)):
             if result[i]<self.treshold:
                 result[i]=-1

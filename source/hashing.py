@@ -24,9 +24,14 @@ class Hasher:
         bands = self.split_row_to_bands(row_index)
         for i in range(len(bands)):
             hash_value = self.hash_band(bands[i])
-            if row_index == self.highest_row_index-1:
-                self.buckets_of_my_document.add(hash_value)
             self.update_buckets(hash_value, row_index, parent)
+    def inspect_single_row(self, row):
+        bands_of_my_document=self.split_single_to_bands(row)
+        for i in range(len(bands_of_my_document)):
+            hash_value = self.hash_band(bands_of_my_document[i])
+            self.buckets_of_my_document.add(hash_value)
+    def reset_buckets_of_my_document(self):
+        self.buckets_of_my_document=set()
     def update_buckets(self, hash_value, row_index, parent):
         while True:
             try:
@@ -53,6 +58,20 @@ class Hasher:
         current_elements=[]
         for i in range(self.highest_column_index):
             current_elements.append(self.matrix[i][row_index])
+            current_amount+=1
+            if current_amount == self.band_length:
+                current_amount = 0
+                bands.append(current_elements)
+                current_elements=[]
+        if not current_elements == []:
+            bands.append(current_elements)
+        return bands
+    def split_single_to_bands(self, row):
+        bands=[]
+        current_amount=0
+        current_elements=[]
+        for i in range(self.highest_column_index):
+            current_elements.append(row[i])
             current_amount+=1
             if current_amount == self.band_length:
                 current_amount = 0
